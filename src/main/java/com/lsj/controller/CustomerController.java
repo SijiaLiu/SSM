@@ -63,9 +63,4 @@ public class CustomerController {
         cs.save(customer);
         return Msg.success();
     }
-
-    @RequestMapping(value = "/add")
-    public String add(){
-        return "add";
-    }
 }
