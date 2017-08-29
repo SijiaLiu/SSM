@@ -21,4 +21,14 @@
     <!--通常都要加annotation-driven 标配 支持更高级的操作 映射动态请求-->
     <mvc:annotation-driven/>
 
+    <mvc:interceptors>
+        <!--<mvc:mapping path="/**"/> &lt;!&ndash; 拦截所有的url包括子url路径 &ndash;&gt;-->
+
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <bean class="com.lsj.util.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
 </beans>

@@ -30,7 +30,15 @@ public class LoginController {
             return "success";
         }
         else{
-            return "";
+            return "redirect:login.jsp";
         }
+    }
+
+    //退出
+    @RequestMapping(value="/logout")
+    public String logout(HttpSession session) throws Exception{
+        //清除Session
+        session.invalidate();
+        return "redirect:login.jsp";
     }
 }

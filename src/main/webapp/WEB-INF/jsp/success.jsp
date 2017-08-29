@@ -73,7 +73,7 @@
             <a class="navbar-brand" href="#">刘斯佳</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#"><span class="glyphicon glyphicon-user"></span>退出</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-user"></span>退出</a></li>
         </ul>
     </div>
 </nav>
@@ -368,7 +368,7 @@
     $("#cus_add_btn").click(function () {
         $.ajax({
             success:function () {
-                window.location.href='../../add.jsp'
+                window.location.href='add.jsp'
             }
         })
     })

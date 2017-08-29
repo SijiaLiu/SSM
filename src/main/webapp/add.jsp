@@ -17,7 +17,7 @@
             <a class="navbar-brand" href="#">刘斯佳</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#"><span class="glyphicon glyphicon-user"></span>退出</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-user"></span>退出</a></li>
         </ul>
     </div>
 </nav>
@@ -37,15 +37,15 @@
         </div>
         <div class="col-xs-12 col-sm-9 col-md-10">
             <div class="row">
-                <div class="col-md-2">
-                    <p class="form-control-static">客户列表</p>
+                <div class="col-md-12 bg-info">
+                    <p class="form-control-static "><h3>创建Customer</h3></p>
                 </div>
             </div>
         </div>
         <div class="col-xs-12 col-sm-9 col-md-10">
             <div class="row">
                 <div class="col-md-2">
-                    <p class="form-control-static">主要信息</p>
+                    <p class="form-control-static"><h4>主要信息</h4></p>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                 </div>
             </form>
         </div>
-        <div class="col-xs-12 col-sm-9 col-md-2 col-md-offset-1">
+        <div class="col-xs-12 col-sm-9 col-md-2 col-md-offset-3">
             <button type="button" class="btn btn-primary" id="cus_add_btn">保存</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
         </div>
@@ -95,8 +95,8 @@
 </div>
 
 <link rel="stylesheet" href="/css/bootstrap.css"/>
-<script src="./js/jquery-3.2.1.min.js"></script>
-<script src="./js/bootstrap.min.js"></script>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script>
 
     $(function () {
@@ -131,13 +131,11 @@
             url:"/cus",
             type:"POST",
             //传的数据
-            data:$("#empAddModal form").serialize(),
+            data:$("#addForm").serialize(),
             success:function (result) {
-                //alert(result.msg);
-                //关闭模态框
-                $("#empAddModal").modal('hide');
-                //到最后一页查看数据
-                to_page(totalRecord)
+                alert(result.msg);
+                window.location.href='add.jsp';
+                //window.open("/WEB-INF/jsp/success.jsp")
             }
         });
     });
@@ -147,15 +145,15 @@
 //            校验name
         var firstName = $("#firstName_add_input").val();
         var lastName = $("#lastName_add_input").val();
-        var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/
+        var regName = /(^[a-zA-Z0-9_-]{3,16}$)|(^[\u2E80-\u9FFF]{2,5})/
         if (!regName.test(firstName)){
-            show_validate("#firstName_add_input", "error", "请输入6-16位英文或者2-5位中文");
+            show_validate("#firstName_add_input", "error", "请输入3-16位英文或者2-5位中文");
             return false;
         }else {
             show_validate("#firstName_add_input" ,"success", " ");
         }
         if (!regName.test(lastName)){
-            show_validate("#lastName_add_input", "error", "请输入6-16位英文或者2-5位中文");
+            show_validate("#lastName_add_input", "error", "请输入3-16位英文或者2-5位中文");
             return false;
         }else {
             show_validate("#lastName_add_input" ,"success", " ");
