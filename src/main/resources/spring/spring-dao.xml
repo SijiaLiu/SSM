@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:component-scan base-package="com.lsj">
+        <!--不扫描Controller-->
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"></context:exclude-filter>
+    </context:component-scan>
+
+    <context:property-placeholder location="classpath*:dbconfig.properties" />
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!--连接池中保存的最大连接数目-->
+        <property name="maxPoolSize" value="20"/>
+        <!--连接池中保存的最少连接数目-->
+        <property name="minPoolSize" value="2"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialPoolSize" value="2"/>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxConnectionAge" value="6000"/>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdleTime" value="60"/>
+    </bean>
+
+    <!--配置sqlSessionFactory 并将数据源注入-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--指定要使用到到mybatis配置文件-->
+        <property name="configLocation" value="classpath:myBaits-config.xml"/>
+        <!--用于配置mapper映射xml Mapper文件路径-->
+        <property name="mapperLocations" value="classpath*:mapper/*.xml"/>
+        <!-- 批量扫描别名 -->
+        <property name="typeAliasesPackage" value="com.lsj.model"></property>
+    </bean>
+    <!--配置一个可以批量执行的sqlSession-->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+        <constructor-arg name="executorType" value="BATCH"></constructor-arg>
+    </bean>
+    <!-- 创建数据映射器 将mybatis的接口实现加入到IOC容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--扫描所有dao接口的实现-->
+        <property name="basePackage" value="com.lsj.dao"/>
+    </bean>
+
+
+    <!-- 对数据源进行事务管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--控制数据源-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <aop:config>
+        <!--切入点表达式-->
+        <aop:pointcut id="txPoint" expression="execution(* com.lsj.service..*(..))"></aop:pointcut>
+        <!--配置事务增强-->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"></aop:advisor>
+    </aop:config>
+    <!--配置事务增强 切入点-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 对insert,update,delete 开头的方法进行事务管理,只要有异常就回滚 -->
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Throwable" />
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Throwable"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Throwable"/>
+            <!-- select,count开头的方法,开启只读,提高数据库访问性能 -->
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+            <!-- 对其他方法 使用默认的事务管理 -->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+</beans>

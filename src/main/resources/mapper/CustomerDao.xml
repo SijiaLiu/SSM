@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lsj.dao.CustomerDao">
+
+    <select id="selectOneByName" parameterType="Customer" resultType="Customer">
+        SELECT * FROM
+        customer
+        WHERE
+        first_name = #{firstName}
+    </select>
+
+    <resultMap id="withAddress" type="Customer">
+        <id column="customer_id" property="customerId"></id>
+        <result column="first_name" property="firstName"></result>
+        <result column="last_name" property="lastName"></result>
+        <result column="last_update" property="lastUpdate"></result>
+        <result column="email" property="email"></result>
+        <association property="address" javaType="Address">
+            <result column="address" property="address"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectAll" resultMap="withAddress">
+        SELECT c.customer_id,
+        c.first_name,c.last_name,
+        c.email,c.last_update,
+        a.address
+        FROM customer c,address a
+        WHERE c.address_id = a.address_id
+    </select>
+
+    <select id="selectOneById" parameterType="int" resultType="Customer">
+        SELECT *
+        FROM customer
+        WHERE
+        customer_id = #{id}
+    </select>
+
+    <update id="update" parameterType="Customer">
+        UPDATE customer
+        SET
+        email = #{email},
+        address_id = #{addressId},
+        last_update = #{lastUpdate}
+        WHERE
+        customer_id = #{customerId}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM customer
+        WHERE
+        customer_id = #{id}
+    </delete>
+
+    <insert id="save" parameterType="Customer">
+        INSERT INTO
+        customer
+        SET
+        first_name = #{firstName},
+        last_name = #{lastName},
+        email = #{email},
+        address_id = #{addressId}
+    </insert>
+</mapper>

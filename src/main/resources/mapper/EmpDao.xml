@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lsj.dao.EmpDao">
+    <resultMap id="withDept" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="email" property="email"></result>
+        <result column="gender" property="gender"></result>
+        <association property="deptName" javaType="Dept">
+            <result column="dept_name" property="deptName"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectAll" resultMap="withDept">
+        SELECT e.emp_id, e.emp_name, e.email, e.gender, d.dept_name
+        FROM tbl_emp e, tbl_dept d
+        WHERE e.d_id = d.dept_id
+    </select>
+
+    <insert id="insertEmp" parameterType="Emp" >
+        INSERT INTO tbl_emp
+        set
+        emp_name = #{empName}, email = #{email}, gender = #{gender}, d_id = #{dId}
+
+    </insert>
+
+    <select id="select" resultType="Emp">
+        SELECT * FROM tbl_emp
+    </select>
+
+    <select id="selectOneById" parameterType="int" resultType="Emp">
+        SELECT * FROM tbl_emp
+        WHERE
+        emp_id = #{id}
+    </select>
+
+    <update id="update" parameterType="Emp">
+        UPDATE tbl_emp
+        SET
+        email = #{email},
+        gender = #{gender},
+        d_id = #{dId}
+        WHERE
+        emp_id = #{empId}
+    </update>
+
+    <delete id="deleteOneById" parameterType="int">
+        DELETE FROM
+        tbl_emp
+        WHERE
+        emp_id = #{empId}
+    </delete>
+</mapper>
